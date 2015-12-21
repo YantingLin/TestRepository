@@ -1,8 +1,6 @@
 package com.example.yanting_lin.myapplication;
 
 import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,108 +12,157 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends ActionBarActivity
+        implements View.OnClickListener, DialogInterface.OnClickListener {
+
+
+
+    private final static int TRANSFER_KEY1 = 753;
+    private final static String MAIN_ACTIVITY_TAG = "MainActivity";
+    private final static String TOAST_FOR_RESPONSE_OK = "Thanks";
+    private final static String TOAST_FOR_RESPONSE_CANCEL = "No~~~";
+    AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.i("ActivityStage", "(1) OverrideOnCreate");
-        final Button DialogButton = (Button) findViewById(R.id.DialogButton);
-        DialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Initialize AlertDialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Kobayashi");
-                builder.setMessage("Find a chair");
-                builder.setPositiveButton("OK",new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int id){
-                        Toast ToastMessage = Toast.makeText(MainActivity.this,"Thanks",Toast.LENGTH_LONG);
-                        ToastMessage.show();
-                        //Activity Transfer
-                        Intent intent = new Intent();
-                        intent.setClass(MainActivity.this, Sencond_Activity.class);
-                        intent.putExtra("ValueFromMainActivity", "DataABCD");
-                        startActivityForResult(intent, 753);
-                        //MainActivity.this.finish();
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
-                   public void onClick(DialogInterface dialog,int id) {
-                       //Toast ToastMessage = Toast.makeText(MainActivity.this,"No~~~",Toast.LENGTH_LONG);
-                       //ToastMessage.show();
-                   }
-                });
-                AlertDialog dialog = builder.create();
+        Log.v(MAIN_ACTIVITY_TAG, "(1) OverrideOnCreate");
+        if(savedInstanceState!=null) {
+            Log.v(MAIN_ACTIVITY_TAG, String.valueOf(savedInstanceState.getInt("isShowDialog")));
+            if(savedInstanceState.getInt("isShowDialog")==1) {
+                dialog = dialogConstruction(getString(R.string.dialog_title),
+                        getString(R.string.dialog_message),
+                        getString(R.string.dialog_ok_button),
+                        getString(R.string.dialog_cancel_button));
                 dialog.show();
             }
-        });
-        //Toast ToastMessage = Toast.makeText(this,"(1) OverrideOnCreate",Toast.LENGTH_LONG);
-        //ToastMessage.show();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i("ActivityStage", "(2) OverrideOnStart");
-        //Toast ToastMessage = Toast.makeText(this,"(2) OverrideOnStart",Toast.LENGTH_LONG);
-        //ToastMessage.show();
+        Log.v(MAIN_ACTIVITY_TAG, "(2) OverrideOnStart");
+        final Button dialogButton = (Button) findViewById(R.id.dialog_button);
+        dialogButton.setOnClickListener(this);
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("ActivityStage","(3) OverrideOnResume");
-        //Toast ToastMessage = Toast.makeText(this,"(3) OverrideOnResume",Toast.LENGTH_LONG);
-        //ToastMessage.show();
+        Log.v(MAIN_ACTIVITY_TAG, "(3) OverrideOnResume");
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.i("ActivityStage","(7) OverrideOnSaveInstanceState");
+        Log.v(MAIN_ACTIVITY_TAG, "(7) OverrideOnSaveInstanceState");
+
+        try {
+            if (dialog.isShowing()) {
+                Log.e(MAIN_ACTIVITY_TAG, "dialogIsShowing");
+                outState.putInt("isShowDialog", 1);
+            }
+        } catch (Exception e) {
+            Log.v(MAIN_ACTIVITY_TAG,e.getMessage());
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i("ActivityStage", "(4) OverrideOnPause");
-        //Toast ToastMessage = Toast.makeText(this,"(4) OverrideOnPause",Toast.LENGTH_LONG);
-        //ToastMessage.show();
+        Log.v(MAIN_ACTIVITY_TAG, "(4) OverrideOnPause");
     }
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i("ActivityStage", "(5) OverrideOnStop");
-        //Toast ToastMessage = Toast.makeText(this,"(5) OverrideOnStop",Toast.LENGTH_LONG);
-        //ToastMessage.show();
+        Log.v(MAIN_ACTIVITY_TAG, "(5) OverrideOnStop");
+        try {
+            if(dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        }
+        catch (NullPointerException e){
+            Log.e(MAIN_ACTIVITY_TAG, e.getMessage());
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i("ActivityStage", "(6) OverrideOnDestroy");
-        //Toast ToastMessage = Toast.makeText(this,"(6) OverrideOnDestroy",Toast.LENGTH_LONG);
-        //ToastMessage.show();
+        Log.v(MAIN_ACTIVITY_TAG, "(6) OverrideOnDestroy");
     }
 
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i("ActivityStage", "(8) OverrideOnActivityResult");
-        switch (resultCode){
+        Log.v(MAIN_ACTIVITY_TAG, "(8) OverrideOnActivityResult");
+        switch (resultCode) {
             //resultCode 要與startActivityForResult所設定的requestCode相同
-            case 753: {
-                Log.i("DataFromSecondActivity",data.getExtras().getString("ResponseFromSecondActivity"));
-            }
-            break;
-            default: {
-                Log.i("Nothing","NoSuitableResultCode");
-            }
-            break;
+            case 753:
+                Log.v(MAIN_ACTIVITY_TAG,
+                        "DataFromSecondActivity：" + data.getExtras().
+                                getString("ResponseFromSecondActivity"));
+                break;
+            default:
+                Log.v(MAIN_ACTIVITY_TAG, "NoSuitableResultCode");
+                break;
         }
     }
+
+    /**
+     *
+     * @param title: Dialog Title name
+     * @param message : Dialog Message text
+     * @param ok : Dialog OK button text
+     * @param cancel : Dialog Cancel button text
+     * @return AlertDialog with initialization
+     */
+    protected AlertDialog dialogConstruction(String title,String message,String ok,String cancel){
+        AlertDialog customAlertDialog;
+        // Initialize AlertDialog
+        customAlertDialog = new AlertDialog.Builder(MainActivity.this)
+                .setTitle(title)
+                .setMessage(message)
+                .create();
+        customAlertDialog.setButton(-1, ok, this);
+        customAlertDialog.setButton(-2 ,cancel,this);
+        return customAlertDialog;
+    }
+    // Implement view.onClickListener's method
+    public void onClick(View view){
+        dialog = dialogConstruction(getString(R.string.dialog_title),
+                getString(R.string.dialog_message),
+                getString(R.string.dialog_ok_button),
+                getString(R.string.dialog_cancel_button));
+        dialog.show();
+    }
+    public void onClick(DialogInterface dialog,int id){
+        switch (id) {
+            case -1:
+                //Positive Button
+                Toast.makeText(MainActivity.this, TOAST_FOR_RESPONSE_OK,
+                        Toast.LENGTH_LONG).show();
+                //Activity Transfer
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, SecondActivity.class);
+                intent.putExtra("ValueFromMainActivity", "DataABCD");
+                startActivityForResult(intent, TRANSFER_KEY1);
+                //MainActivity.this.finish();
+                break;
+            case -2:
+                //Negative Button
+                Toast.makeText(MainActivity.this, TOAST_FOR_RESPONSE_CANCEL,
+                        Toast.LENGTH_LONG).show();
+                break;
+            default:
+                break;
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -136,6 +183,7 @@ public class MainActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
 }
