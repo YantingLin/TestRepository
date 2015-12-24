@@ -16,27 +16,28 @@ import android.widget.Toast;
 public class MainActivity extends ActionBarActivity
         implements View.OnClickListener, DialogInterface.OnClickListener {
 
-
-
-    private final static int TRANSFER_KEY1 = 753;
+    private final static String KEY_DIALOG = "isShowDialog";
+    private final static String KEY_SECOND_ACTIVITY = "ResponseFromSecondActivity";
     private final static String MAIN_ACTIVITY_TAG = "MainActivity";
     private final static String TOAST_FOR_RESPONSE_OK = "Thanks";
     private final static String TOAST_FOR_RESPONSE_CANCEL = "No~~~";
-    AlertDialog dialog;
+    private AlertDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final Button dialogButton = (Button) findViewById(R.id.dialog_button);
+        dialogButton.setOnClickListener(this);
         Log.v(MAIN_ACTIVITY_TAG, "(1) OverrideOnCreate");
         if(savedInstanceState!=null) {
-            Log.v(MAIN_ACTIVITY_TAG, String.valueOf(savedInstanceState.getInt("isShowDialog")));
-            if(savedInstanceState.getInt("isShowDialog")==1) {
-                dialog = dialogConstruction(getString(R.string.dialog_title),
-                        getString(R.string.dialog_message),
-                        getString(R.string.dialog_ok_button),
-                        getString(R.string.dialog_cancel_button));
-                dialog.show();
+            Log.v(MAIN_ACTIVITY_TAG, String.valueOf(savedInstanceState.getInt(KEY_DIALOG)));
+            if(savedInstanceState.getInt(KEY_DIALOG)==1) {
+                mDialog = dialogConstruction(R.string.dialog_title,
+                        R.string.dialog_message,
+                        R.string.dialog_ok_button,
+                        R.string.dialog_cancel_button);
+                mDialog.show();
             }
         }
     }
@@ -45,9 +46,6 @@ public class MainActivity extends ActionBarActivity
     protected void onStart() {
         super.onStart();
         Log.v(MAIN_ACTIVITY_TAG, "(2) OverrideOnStart");
-        final Button dialogButton = (Button) findViewById(R.id.dialog_button);
-        dialogButton.setOnClickListener(this);
-
     }
 
     @Override
@@ -61,14 +59,14 @@ public class MainActivity extends ActionBarActivity
         super.onSaveInstanceState(outState);
         Log.v(MAIN_ACTIVITY_TAG, "(7) OverrideOnSaveInstanceState");
 
-        try {
-            if (dialog.isShowing()) {
-                Log.e(MAIN_ACTIVITY_TAG, "dialogIsShowing");
-                outState.putInt("isShowDialog", 1);
+
+        if (mDialog!=null) {
+            if(mDialog.isShowing()) {
+                Log.v(MAIN_ACTIVITY_TAG, "dialogIsShowing");
+                outState.putInt(KEY_DIALOG, 1);
             }
-        } catch (Exception e) {
-            Log.v(MAIN_ACTIVITY_TAG,e.getMessage());
         }
+
     }
 
     @Override
@@ -80,20 +78,17 @@ public class MainActivity extends ActionBarActivity
     protected void onStop() {
         super.onStop();
         Log.v(MAIN_ACTIVITY_TAG, "(5) OverrideOnStop");
-        try {
-            if(dialog.isShowing()) {
-                dialog.dismiss();
-            }
-        }
-        catch (NullPointerException e){
-            Log.e(MAIN_ACTIVITY_TAG, e.getMessage());
-        }
-    }
+     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.v(MAIN_ACTIVITY_TAG, "(6) OverrideOnDestroy");
+        if(mDialog!=null) {
+            if(mDialog.isShowing()) {
+                mDialog.dismiss();
+            }
+        }
     }
 
     @Override
@@ -105,7 +100,7 @@ public class MainActivity extends ActionBarActivity
             case 753:
                 Log.v(MAIN_ACTIVITY_TAG,
                         "DataFromSecondActivity：" + data.getExtras().
-                                getString("ResponseFromSecondActivity"));
+                                getString(KEY_SECOND_ACTIVITY));
                 break;
             default:
                 Log.v(MAIN_ACTIVITY_TAG, "NoSuitableResultCode");
@@ -115,47 +110,48 @@ public class MainActivity extends ActionBarActivity
 
     /**
      *
-     * @param title: Dialog Title name
-     * @param message : Dialog Message text
-     * @param ok : Dialog OK button text
-     * @param cancel : Dialog Cancel button text
+     * @param titleID: Dialog Title name ID
+     * @param messageID : Dialog Message ID
+     * @param okID : Dialog OK button ID
+     * @param cancelID : Dialog Cancel button ID
      * @return AlertDialog with initialization
      */
-    protected AlertDialog dialogConstruction(String title,String message,String ok,String cancel){
+    protected AlertDialog dialogConstruction(int titleID,int messageID,int okID,int cancelID){
         AlertDialog customAlertDialog;
         // Initialize AlertDialog
-        customAlertDialog = new AlertDialog.Builder(MainActivity.this)
-                .setTitle(title)
-                .setMessage(message)
+        customAlertDialog = new AlertDialog.Builder(this)
+                .setTitle(getText(titleID))
+                .setMessage(getText(messageID))
                 .create();
-        customAlertDialog.setButton(-1, ok, this);
-        customAlertDialog.setButton(-2 ,cancel,this);
+
+        customAlertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getText(okID), this);
+        customAlertDialog.setButton(DialogInterface.BUTTON_NEGATIVE ,getText(cancelID),this);
         return customAlertDialog;
     }
     // Implement view.onClickListener's method
     public void onClick(View view){
-        dialog = dialogConstruction(getString(R.string.dialog_title),
-                getString(R.string.dialog_message),
-                getString(R.string.dialog_ok_button),
-                getString(R.string.dialog_cancel_button));
-        dialog.show();
+        mDialog = dialogConstruction(R.string.dialog_title,
+                R.string.dialog_message,
+                R.string.dialog_ok_button,
+                R.string.dialog_cancel_button);
+        mDialog.show();
+        //switch (view.getId())
     }
     public void onClick(DialogInterface dialog,int id){
         switch (id) {
-            case -1:
+            case DialogInterface.BUTTON_POSITIVE:
                 //Positive Button
-                Toast.makeText(MainActivity.this, TOAST_FOR_RESPONSE_OK,
+                Toast.makeText(this, TOAST_FOR_RESPONSE_OK,
                         Toast.LENGTH_LONG).show();
                 //Activity Transfer
                 Intent intent = new Intent();
-                intent.setClass(MainActivity.this, SecondActivity.class);
+                intent.setClass(this, SecondActivity.class);
                 intent.putExtra("ValueFromMainActivity", "DataABCD");
-                startActivityForResult(intent, TRANSFER_KEY1);
-                //MainActivity.this.finish();
+                startActivityForResult(intent, 753);
                 break;
-            case -2:
+            case DialogInterface.BUTTON_NEGATIVE:
                 //Negative Button
-                Toast.makeText(MainActivity.this, TOAST_FOR_RESPONSE_CANCEL,
+                Toast.makeText(this, TOAST_FOR_RESPONSE_CANCEL,
                         Toast.LENGTH_LONG).show();
                 break;
             default:
