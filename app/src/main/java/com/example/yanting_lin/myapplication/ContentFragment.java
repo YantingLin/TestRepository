@@ -2,76 +2,77 @@ package com.example.yanting_lin.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+//import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.TextView;
+//import android.widget.ArrayAdapter;
+//import android.widget.ListView;
 
 
 /**
  * ForSecondActivityUsed
  * Created by yanting_lin on 2015/12/22.
+ *
+ * List 寫法實作動態更新比較困難
+ * 首先實作editBox的新增與送出
+ * 之前撰寫的List 寫法已於2015/12/24 commit
+ * Edit by yanting_lin on 2015/12/25
  */
-public class ContentFragment extends ListFragment{
-    OnContentSelectedListener mListener;
+
+public class ContentFragment extends Fragment {
+
+
     final static String TAG_Content_FRAGMENT = "ContentFragment";
 
-    public interface OnContentSelectedListener {
-        void onArticleSelected(int position);
-    }
-
-    //還沒寫完，extend ListFragment會爆Error
     @Override
-    public void onAttach(Activity activity){
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.v(TAG_Content_FRAGMENT, "onAttach()");
-        try {
-            mListener = (OnContentSelectedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnContentSelectedListener");
-        }
+        Log.v(TAG_Content_FRAGMENT, "FragmentOnAttach()");
     }
-    public void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        String[] presidents = { "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月" };
-        setListAdapter(new ArrayAdapter<String>(getActivity(), R.layout.abc_list_menu_item_checkbox,
-                presidents));
-        Log.v(TAG_Content_FRAGMENT, "FragmentOnCreate()");
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.v(TAG_Content_FRAGMENT, "FragmentOnCreate()");
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-      //        ListView listView =(ListView) getListView().findViewById(R.id.listView);
         Log.v(TAG_Content_FRAGMENT, "FragmentOnCreateView()");
-        return  inflater.inflate(R.layout.content_fragment,container,false);
+        return inflater.inflate(R.layout.content_fragment, container, false);
     }
 
-    public void onActivityCreated(Bundle bundle){
+    public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
         Log.v(TAG_Content_FRAGMENT, "FragmentOnActivityCreated()");
     }
-    public void onStart(){
+
+    public void onStart() {
         super.onStart();
         Log.v(TAG_Content_FRAGMENT, "onStart()");
     }
-    public void onResume(){
+
+    public void onResume() {
         super.onResume();
         Log.v(TAG_Content_FRAGMENT, "onResume()");
 
     }
 
 
-    @Override
-    public void onListItemClick(ListView listView,View view, int position, long id){
-        Log.v(TAG_Content_FRAGMENT, "onListItemClick()");
-        mListener.onArticleSelected(position);
+    public void updateContentView(String inputText) {
+        TextView article = (TextView) getActivity().findViewById(R.id.textView2);
+        article.setText(inputText);
     }
+
+    public String getEditText() {
+        EditText editText = (EditText) getActivity().findViewById(R.id.editText2);
+        return editText.getText().toString();
+    }
+
 
 }
