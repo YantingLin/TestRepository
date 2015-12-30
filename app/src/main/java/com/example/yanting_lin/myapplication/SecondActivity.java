@@ -2,6 +2,7 @@ package com.example.yanting_lin.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +19,7 @@ public class SecondActivity extends FragmentActivity implements View.OnClickList
 
     private static final String SECOND_ACTIVITY_TAG = "SecondActivity";
     private static final String KEY_PUT_DATA_NAME = "ResponseFromSecondActivity";
-    private static boolean IS_CONTENT_BUTTON_SET = false;
+    private boolean isContentSet = false;
     //動態產生的Fragment才需要
     private static final String TAG_FOR_FRAGMENT_CONTENT_CREATED = "ContentFragment";
     Button ContentFragmentButton;
@@ -87,67 +88,71 @@ public class SecondActivity extends FragmentActivity implements View.OnClickList
 
     public void onClick(View view) {
         Log.v(SECOND_ACTIVITY_TAG, "onClick event happened");
+        ArticleFragment articleFragment;
+        ContentFragment contentFragment;
 
         switch (view.getId()) {
-            case R.id.change_button: {
+            case R.id.change_button:
                 //Add second Fragment
                 Log.v(SECOND_ACTIVITY_TAG, "Get change button!");
-                ContentFragment secondFragment = new ContentFragment();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction SecondTransaction = fragmentManager
-                        .beginTransaction();
-                SecondTransaction.add(R.id.vertical_layout_of_second_activity, secondFragment,
-                        TAG_FOR_FRAGMENT_CONTENT_CREATED);
-                SecondTransaction.addToBackStack(null);
-                SecondTransaction.commit();
-                //可以同步
-                fragmentManager.executePendingTransactions();
+                //Check second Fragment is created before or not
+                if (getSupportFragmentManager()
+                        .findFragmentByTag(TAG_FOR_FRAGMENT_CONTENT_CREATED) == null) {
+                    ContentFragment secondFragment = new ContentFragment();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction SecondTransaction = fragmentManager
+                            .beginTransaction();
+                    SecondTransaction.add(R.id.vertical_layout_of_second_activity, secondFragment,
+                            TAG_FOR_FRAGMENT_CONTENT_CREATED);
+                    SecondTransaction.addToBackStack(null);
+                    SecondTransaction.commit();
+                    //可以同步
+                    fragmentManager.executePendingTransactions();
 
-                //Content Button Event Initialization
-                if (!IS_CONTENT_BUTTON_SET && getSupportFragmentManager()
-                        .findFragmentByTag(TAG_FOR_FRAGMENT_CONTENT_CREATED) != null) {
-
-                    ContentFragmentButton = (Button) getSupportFragmentManager()
-                            .findFragmentByTag(TAG_FOR_FRAGMENT_CONTENT_CREATED).getView()
-                            .findViewById(R.id.content_button);
-
-                    if (ContentFragmentButton != null) {
-                        ContentFragmentButton.setOnClickListener(this);
-                        Log.v(SECOND_ACTIVITY_TAG, "Set Content button event");
-                        IS_CONTENT_BUTTON_SET = true;
+                    Fragment checkContentFragment = getSupportFragmentManager()
+                            .findFragmentByTag(TAG_FOR_FRAGMENT_CONTENT_CREATED);
+                    //Content Button Event Initialization
+                    if (!isContentSet && checkContentFragment != null) {
+                        ContentFragmentButton = (Button) checkContentFragment.getView()
+                                .findViewById(R.id.content_button);
+                        if (ContentFragmentButton != null) {
+                            ContentFragmentButton.setOnClickListener(this);
+                            Log.v(SECOND_ACTIVITY_TAG, "Set Content button event");
+                            isContentSet = true;
+                        }
                     }
+
                 }
-            }
-            break;
-            case R.id.article_button: {
+                break;
+            case R.id.article_button:
                 //ArticleFragment transfer data to ContentFragment
                 Log.v(SECOND_ACTIVITY_TAG, "Get article button!");
-                ArticleFragment articleFragment = (ArticleFragment) getSupportFragmentManager()
+                articleFragment = (ArticleFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.article_Container);
                 if (articleFragment != null) {
-                    ContentFragment contentFragment = (ContentFragment) getSupportFragmentManager()
+                    contentFragment = (ContentFragment) getSupportFragmentManager()
                             .findFragmentByTag(TAG_FOR_FRAGMENT_CONTENT_CREATED);
                     if (contentFragment != null) {
                         contentFragment.updateContentView(articleFragment.getEditText());
                     }
                 }
-            }
-            break;
-            case R.id.content_button: {
+
+                break;
+            case R.id.content_button:
                 //ContentFragment transfer data to ArticleFragment
                 Log.v(SECOND_ACTIVITY_TAG, "Get content button!");
-                ContentFragment contentFragment = (ContentFragment) getSupportFragmentManager()
+                contentFragment = (ContentFragment) getSupportFragmentManager()
                         .findFragmentByTag(TAG_FOR_FRAGMENT_CONTENT_CREATED);
 
                 if (contentFragment != null) {
-                    ArticleFragment articleFragment = (ArticleFragment) getSupportFragmentManager()
+                    articleFragment = (ArticleFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.article_Container);
 
                     if (articleFragment != null) {
                         articleFragment.updateArticleView(contentFragment.getEditText());
                     }
                 }
-            }
+
         }
     }
 }
