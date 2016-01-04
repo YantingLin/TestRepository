@@ -2,37 +2,44 @@ package com.example.yanting_lin.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
-//import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-//import android.widget.ArrayAdapter;
-//import android.widget.ListView;
+
 
 
 /**
  * ForSecondActivityUsed
  * Created by yanting_lin on 2015/12/22.
  *
- * List 寫法實作動態更新比較困難
- * 首先實作editBox的新增與送出
- * 之前撰寫的List 寫法已於2015/12/24 commit
- * Edit by yanting_lin on 2015/12/25
  */
 
-public class ContentFragment extends Fragment {
-
+public class ContentFragment extends Fragment implements View.OnClickListener{
 
     final static String TAG_Content_FRAGMENT = "ContentFragment";
+    OnContentFragmentClickListener mCallback;
+
+    public interface OnContentFragmentClickListener{
+        void onButtonClicked();
+    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         Log.v(TAG_Content_FRAGMENT, "FragmentOnAttach()");
+        try{
+            mCallback = (OnContentFragmentClickListener) activity;
+        }
+        catch (ClassCastException e) {
+            throw new ClassCastException(
+                    activity.toString() + " must implement OnHeadlineSelectedListener");
+        }
+
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +51,10 @@ public class ContentFragment extends Fragment {
             Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.v(TAG_Content_FRAGMENT, "FragmentOnCreateView()");
-        return inflater.inflate(R.layout.content_fragment, container, false);
+        View view = inflater.inflate(R.layout.content_fragment,container,false);
+        Button button = (Button) view.findViewById(R.id.content_button);
+        button.setOnClickListener(this);
+        return view;
     }
 
     public void onActivityCreated(Bundle bundle) {
@@ -72,6 +82,12 @@ public class ContentFragment extends Fragment {
     public String getEditText() {
         EditText editText = (EditText) getActivity().findViewById(R.id.editText2);
         return editText.getText().toString();
+    }
+
+    @Override
+    public void onClick(View view){
+        Log.v(TAG_Content_FRAGMENT, "OnClick()");
+        mCallback.onButtonClicked();
     }
 
 
