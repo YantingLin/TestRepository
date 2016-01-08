@@ -31,7 +31,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.v(TAG_Content_FRAGMENT, "FragmentOnAttach()");
+        Log.v(TAG_Content_FRAGMENT, "1. onAttach()");
         try{
             mCallback = (OnContentFragmentClickListener) activity;
         }
@@ -42,35 +42,69 @@ public class ContentFragment extends Fragment implements View.OnClickListener{
 
     }
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(TAG_Content_FRAGMENT, "FragmentOnCreate()");
+        Log.v(TAG_Content_FRAGMENT, "2. onCreate()");
     }
 
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        Log.v(TAG_Content_FRAGMENT, "FragmentOnCreateView()");
+        Log.v(TAG_Content_FRAGMENT, "3. onCreateView()");
         View view = inflater.inflate(R.layout.content_fragment,container,false);
         Button button = (Button) view.findViewById(R.id.content_button);
         button.setOnClickListener(this);
         return view;
     }
 
+    @Override
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
-        Log.v(TAG_Content_FRAGMENT, "FragmentOnActivityCreated()");
+        Log.v(TAG_Content_FRAGMENT, "4. onActivityCreated()");
     }
 
+    @Override
     public void onStart() {
         super.onStart();
-        Log.v(TAG_Content_FRAGMENT, "onStart()");
+        Log.v(TAG_Content_FRAGMENT, "5. onStart()");
     }
 
+    @Override
     public void onResume() {
         super.onResume();
-        Log.v(TAG_Content_FRAGMENT, "onResume()");
+        Log.v(TAG_Content_FRAGMENT, "6. onResume()");
+    }
 
+    @Override
+    public void onPause(){
+        super.onPause();
+        Log.v(TAG_Content_FRAGMENT, "7. onPause()");
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        Log.v(TAG_Content_FRAGMENT, "8. onStop()");
+    }
+
+    @Override
+    public void onDestroyView(){
+        super.onDestroyView();
+        Log.v(TAG_Content_FRAGMENT, "9. onDestroyView()");
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Log.v(TAG_Content_FRAGMENT, "10. onDestroy()");
+    }
+
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        Log.v(TAG_Content_FRAGMENT, "11. onDetach()");
     }
 
 

@@ -6,6 +6,7 @@
     <string name="dialog_message">Find a chair</string>
     <string name="dialog_ok_button">Ok</string>
     <string name="dialog_cancel_button">Cancel</string>
+    <string name="dialog_show_name">CreateDialog</string>
     <string name="change_button">Add Button</string>
     <string name="content_fragment_name">Fragment_Name</string>
     <string name="article_fragment_textview_text">FirstFragment</string>

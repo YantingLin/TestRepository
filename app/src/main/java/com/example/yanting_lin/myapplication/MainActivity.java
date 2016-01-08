@@ -3,6 +3,7 @@ package com.example.yanting_lin.myapplication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -16,11 +17,17 @@ import android.widget.Toast;
 public class MainActivity extends ActionBarActivity
         implements View.OnClickListener, DialogInterface.OnClickListener {
 
+
     private final static String KEY_DIALOG = "isShowDialog";
     private final static String KEY_SECOND_ACTIVITY = "ResponseFromSecondActivity";
     private final static String MAIN_ACTIVITY_TAG = "MainActivity";
     private final static String TOAST_FOR_RESPONSE_OK = "Thanks";
     private final static String TOAST_FOR_RESPONSE_CANCEL = "No~~~";
+    private final static String KEY_VALUE_TO_SECOND_ACTIVITY = "ValueFromMainActivity";
+    private final static String BROADCAST_ACTION_NAME
+            = "com.example.yanting_lin.BroadcastTesting.YOYO_Action";
+    private final static String BROADCAST_KEY = "Broadcast_key";
+    private final static String BROADCAST_MESSAGE = "LaLaLaLaLaLa~";
     private AlertDialog mDialog;
 
     @Override
@@ -146,13 +153,17 @@ public class MainActivity extends ActionBarActivity
                 //Activity Transfer
                 Intent intent = new Intent();
                 intent.setClass(this, SecondActivity.class);
-                intent.putExtra("ValueFromMainActivity", "DataABCD");
+                intent.putExtra(KEY_VALUE_TO_SECOND_ACTIVITY, "DataABCD");
                 startActivityForResult(intent, 753);
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 //Negative Button
-                Toast.makeText(this, TOAST_FOR_RESPONSE_CANCEL,
-                        Toast.LENGTH_LONG).show();
+//                Toast.makeText(this, TOAST_FOR_RESPONSE_CANCEL,
+//                        Toast.LENGTH_LONG).show();
+                Intent broadcastIntent = new Intent(BROADCAST_ACTION_NAME);
+                broadcastIntent.putExtra(BROADCAST_KEY, BROADCAST_MESSAGE);
+                sendBroadcast(broadcastIntent);
+
                 break;
             default:
                 break;

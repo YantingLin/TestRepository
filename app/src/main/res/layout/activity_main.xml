@@ -19,8 +19,8 @@
         android:id="@+id/dialog_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CreateDialog"
-        android:layout_marginTop="41dp"
         android:layout_below="@+id/text_view"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="41dp"
+        android:text="@+id/dialog_show_name" />
 </RelativeLayout>
